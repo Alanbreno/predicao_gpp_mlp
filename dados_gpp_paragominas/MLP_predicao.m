@@ -1,4 +1,4 @@
-clear all;
+clear variables;
 
 loc1 = readmatrix('gpp_-2.92165_-47.38870.csv');
 loc2 = readmatrix('gpp_-2.92304_-47.26719.csv');
@@ -78,15 +78,26 @@ end
 E = [P P1 P2];
 S = [T T1 T2];
 %
-net = feedforwardnet(50);
-net.divideFcn = 'divideind';
-net.divideParam.trainInd = 1:71215;
-net.divideParam.valInd = 71216:98600;
-net.divideParam.testInd = 98601:120510;
-
-[net, tr] = train(net, E, S);
-
-a = sim(net, P2);
-
-erroM = immse(a, T2);
+seed = zeros(100,20,3);
+for i = 1:100
+    for j = 5:20
+        rng(i);
+        net = feedforwardnet(j);
+        net.divideFcn = 'divideind';
+        net.divideParam.trainInd = 1:71215;
+        net.divideParam.valInd = 71216:98600;
+        net.divideParam.testInd = 98601:120510;
+        net.trainParam.showWindow = false; 
+        
+        [net, tr] = train(net, E, S);
+        
+        a = sim(net, P2);
+        
+        erroM = immse(a, T2);
+        seed(i, j, 1) = i;
+        seed(i, j, 2) = j;
+        seed(i, j, 3) = erroM;
+    end
+    
+end
 
