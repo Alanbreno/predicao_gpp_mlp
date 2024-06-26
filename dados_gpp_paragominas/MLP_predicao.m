@@ -1,5 +1,6 @@
 clear variables;
 
+
 loc1 = readmatrix('gpp_-2.92165_-47.38870.csv');
 loc2 = readmatrix('gpp_-2.92304_-47.26719.csv');
 loc3 = readmatrix("gpp_-2.92411_-47.32732.csv");
@@ -78,9 +79,13 @@ end
 E = [P P1 P2];
 S = [T T1 T2];
 %
-seed = zeros(100,20,3);
-for i = 1:100
-    for j = 5:20
+numSeed = 5;
+numNeuronios = 30;
+
+
+seed = zeros(numSeed,numNeuronios);
+for i = 1:numSeed
+    for j = 5:numNeuronios
         rng(i);
         net = feedforwardnet(j);
         net.divideFcn = 'divideind';
@@ -94,10 +99,41 @@ for i = 1:100
         a = sim(net, P2);
         
         erroM = immse(a, T2);
-        seed(i, j, 1) = i;
-        seed(i, j, 2) = j;
-        seed(i, j, 3) = erroM;
+      
+        seed(i, j) = erroM;
     end
-    
+    disp(i)
 end
+
+MSE = seed(:,5:end);
+[minMSE, linearIndex] = min(MSE(:));
+[rngIndex, neuronIndex] = ind2sub(size(MSE), linearIndex);
+
+% Exiba os resultados
+fprintf('O menor MSE é %f\n', minMSE);
+fprintf('O valor de rng correspondente é %d\n', rngIndex);
+fprintf('O número de neurônios na camada escondida correspondente é %d\n', neuronIndex+4);
+
+rng(rngIndex);
+net = feedforwardnet(neuronIndex+4);
+net.divideFcn = 'divideind';
+net.divideParam.trainInd = 1:71215;
+net.divideParam.valInd = 71216:98600;
+net.divideParam.testInd = 98601:120510;
+net.trainParam.showWindow = true; 
+
+[net, tr] = train(net, E, S);
+
+a = sim(net, P2);
+
+erroM = immse(a, T2);
+
+
+erroM --> 1.4705.
+rng --> 3.
+Numero_neuronios_camada_escondida --> 27.
+
+
+
+
 
