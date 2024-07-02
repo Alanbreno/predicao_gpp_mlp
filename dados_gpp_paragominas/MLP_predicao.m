@@ -78,7 +78,7 @@ end
 %
 E = [P P1 P2];
 S = [T T1 T2];
-%
+%%
 numSeed = 5;
 numNeuronios = 30;
 
@@ -113,9 +113,9 @@ MSE = seed(:,5:end);
 fprintf('O menor MSE é %f\n', minMSE);
 fprintf('O valor de rng correspondente é %d\n', rngIndex);
 fprintf('O número de neurônios na camada escondida correspondente é %d\n', neuronIndex+4);
-
-rng(rngIndex);
-net = feedforwardnet(neuronIndex+4);
+%%
+rng(3);
+net = feedforwardnet(27);
 net.divideFcn = 'divideind';
 net.divideParam.trainInd = 1:71215;
 net.divideParam.valInd = 71216:98600;
@@ -129,9 +129,9 @@ a = sim(net, P2);
 erroM = immse(a, T2);
 
 
-erroM --> 1.4705.
-rng --> 3.
-Numero_neuronios_camada_escondida --> 27.
+%erroM --> 1.4705.
+%rng --> 3.
+%Numero_neuronios_camada_escondida --> 27.
 
 
 
